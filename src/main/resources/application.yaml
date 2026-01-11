@@ -1,0 +1,15 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /dev
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/hotel_booking_dev"
+    username: postgres
+    password: 0911600379
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

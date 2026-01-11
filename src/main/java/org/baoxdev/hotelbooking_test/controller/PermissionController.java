@@ -1,0 +1,49 @@
+package org.baoxdev.hotelbooking_test.controller;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.baoxdev.hotelbooking_test.dto.ApiResponse;
+import org.baoxdev.hotelbooking_test.dto.request.PermissionRequest;
+import org.baoxdev.hotelbooking_test.dto.response.PermissionResponse;
+import org.baoxdev.hotelbooking_test.service.impl.PermissionServiceImpl;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/permission")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
+public class PermissionController {
+    PermissionServiceImpl permissionService;
+
+    @GetMapping("/get/{permissionId}")
+    public ApiResponse<PermissionResponse> getPermissionById(@PathVariable String permissionId){
+         return ApiResponse.<PermissionResponse>builder()
+                 .result(permissionService.getPermission(permissionId))
+                 .build();
+    }
+
+    @PostMapping("/create")
+    public ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request){
+        return ApiResponse.<PermissionResponse>builder()
+                .result(permissionService.createPermission(request))
+                .build();
+    }
+
+    @GetMapping("/getAll")
+    public ApiResponse<List<PermissionResponse>> getAllPermission(){
+        return ApiResponse.<List<PermissionResponse>>builder()
+                .result(permissionService.getAllPermission())
+                .build();
+    }
+
+    @DeleteMapping("/delete/{permissionId}")
+    public ApiResponse<Void> deletePermission(@PathVariable String permissionId){
+        permissionService.deletePermission(permissionId);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
+}
