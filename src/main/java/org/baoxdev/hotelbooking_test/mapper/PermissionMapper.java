@@ -14,15 +14,17 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
 public class PermissionMapper {
     public Permission createPermissionFromResponse(PermissionRequest request){
+
+
         return Permission.builder()
-                .permissionName(request.getPermission_name())
+                .permissionName(request.getPermissionName())
                 .description(request.getDescription())
                 .build();
     }
 
     public PermissionResponse convertPermissionToResponse(Permission permission){
         return PermissionResponse.builder()
-                .permission_name(permission.getPermissionName())
+                .permissionName(permission.getPermissionName())
                 .description(permission.getDescription())
                 .build();
     }

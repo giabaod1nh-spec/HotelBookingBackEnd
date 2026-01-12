@@ -1,5 +1,6 @@
 package org.baoxdev.hotelbooking_test.mapper;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Data
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserMapper {
     UserRepository userRepository;
     PermissionRepository permissionRepository;

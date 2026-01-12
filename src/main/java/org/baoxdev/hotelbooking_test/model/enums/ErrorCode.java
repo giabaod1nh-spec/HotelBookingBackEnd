@@ -5,8 +5,9 @@ import org.springframework.http.HttpStatusCode;
 
 public enum ErrorCode {
     USER_EXISTED(1001 , "Nguoi dung da ton tai" , HttpStatus.BAD_GATEWAY),
-
-
+    AUTHENTICATED_FAILED(1002 , "Username or password incorrect" , HttpStatus.NOT_FOUND),
+    CREATETOKEN_FAILED(1003 ,"Failed when create token" , HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND(1004 , "User not found" , HttpStatus.BAD_REQUEST)
     ;
 
 

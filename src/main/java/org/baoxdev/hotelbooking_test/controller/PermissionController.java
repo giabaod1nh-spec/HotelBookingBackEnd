@@ -22,12 +22,14 @@ public class PermissionController {
     public ApiResponse<PermissionResponse> getPermissionById(@PathVariable String permissionId){
          return ApiResponse.<PermissionResponse>builder()
                  .result(permissionService.getPermission(permissionId))
+                 .code(1000)
                  .build();
     }
 
     @PostMapping("/create")
     public ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request){
         return ApiResponse.<PermissionResponse>builder()
+                .code(1000)
                 .result(permissionService.createPermission(request))
                 .build();
     }
@@ -35,6 +37,7 @@ public class PermissionController {
     @GetMapping("/getAll")
     public ApiResponse<List<PermissionResponse>> getAllPermission(){
         return ApiResponse.<List<PermissionResponse>>builder()
+                .code(1000)
                 .result(permissionService.getAllPermission())
                 .build();
     }

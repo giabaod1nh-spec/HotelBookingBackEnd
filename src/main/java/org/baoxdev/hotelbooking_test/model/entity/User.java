@@ -1,21 +1,20 @@
 package org.baoxdev.hotelbooking_test.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.util.Set;
 
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
 @Builder
+@Getter
+@Setter
 
 public class User {
     @Id

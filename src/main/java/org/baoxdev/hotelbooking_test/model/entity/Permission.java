@@ -1,10 +1,7 @@
 package org.baoxdev.hotelbooking_test.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -12,7 +9,8 @@ import java.util.List;
 @Table(name = "permissions")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class Permission {
     @Id

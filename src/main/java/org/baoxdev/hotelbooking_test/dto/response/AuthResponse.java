@@ -3,13 +3,12 @@ package org.baoxdev.hotelbooking_test.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
-public class PermissionResponse {
-    String permissionName;
-    String description;
-
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class AuthResponse {
+    String token;
+    boolean authenticated;
 }
