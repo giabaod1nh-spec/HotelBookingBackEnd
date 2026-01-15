@@ -1,5 +1,6 @@
 package org.baoxdev.hotelbooking_test.mapper;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,11 +13,13 @@ import org.baoxdev.hotelbooking_test.repository.PermissionRepository;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoleMapper {
     PermissionRepository permissionRepository;
 
@@ -30,6 +33,7 @@ public class RoleMapper {
                 .roleName(request.getRoleName())
                 .description(request.getDescription())
                 .permissions(permission)
+                .created_at(Instant.now())
                 .build();
     }
 

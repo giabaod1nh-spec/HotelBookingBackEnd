@@ -26,6 +26,7 @@ public class UserCreationRequest {
 
     private String lastName;
 
+    private Set<String> roles;
     //private List<Role> roles;
     //tao user , sau do quyen gan roles cho admin
 }

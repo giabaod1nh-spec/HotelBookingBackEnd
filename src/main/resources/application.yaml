@@ -13,3 +13,8 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  data:
+    redis:
+      host: localhost
+      port: 3050
+      password: YnttLGa38uDs29MUZ132smcVDv4Icfzn

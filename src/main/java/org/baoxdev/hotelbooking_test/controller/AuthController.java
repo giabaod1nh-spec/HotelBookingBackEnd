@@ -1,13 +1,19 @@
 package org.baoxdev.hotelbooking_test.controller;
 
+import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.dto.ApiResponse;
 import org.baoxdev.hotelbooking_test.dto.request.AuthRequest;
+import org.baoxdev.hotelbooking_test.dto.request.IntroSpectRequest;
+import org.baoxdev.hotelbooking_test.dto.request.RefreshTokenRequest;
 import org.baoxdev.hotelbooking_test.dto.response.AuthResponse;
+import org.baoxdev.hotelbooking_test.dto.response.IntroSpectResponse;
 import org.baoxdev.hotelbooking_test.service.impl.AuthServiceImpl;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/auth")
@@ -24,5 +30,19 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/introspect")
+    public ApiResponse<IntroSpectResponse> introspectToken(@RequestBody IntroSpectRequest request){
+        return ApiResponse.<IntroSpectResponse>builder()
+                .code(1000)
+                .result(authService.introspectToken(request))
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) throws ParseException, JOSEException {
+        return ApiResponse.<AuthResponse>builder()
+                .result(authService.refreshTokenAfterTimeOut(request))
+                .build();
+    }
 
 }

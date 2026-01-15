@@ -41,4 +41,9 @@ public class UserServiceImpl implements IUserService {
     public List<UserCreationResponse> getAllUser() {
         return userRepository.findAll().stream().map(user -> userMapper.convertResponseFromUser(user)).toList();
     }
+
+    @Override
+    public void deleteUser(String userId) {
+        userRepository.deleteById(userId);
+    }
 }

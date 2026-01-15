@@ -42,4 +42,12 @@ public class UserController {
                 .result(userService.getAllUser())
                 .build();
     }
+
+    @DeleteMapping("/delete/{userId}")
+    public ApiResponse<Void> deleteUser(@PathVariable String userId){
+        userService.deleteUser(userId);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .build();
+    }
 }

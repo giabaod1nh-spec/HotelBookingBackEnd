@@ -7,7 +7,14 @@ public enum ErrorCode {
     USER_EXISTED(1001 , "Nguoi dung da ton tai" , HttpStatus.BAD_GATEWAY),
     AUTHENTICATED_FAILED(1002 , "Username or password incorrect" , HttpStatus.NOT_FOUND),
     CREATETOKEN_FAILED(1003 ,"Failed when create token" , HttpStatus.BAD_REQUEST),
-    USER_NOT_FOUND(1004 , "User not found" , HttpStatus.BAD_REQUEST)
+    USER_NOT_FOUND(1004, "User not found" , HttpStatus.BAD_REQUEST),
+    ROLE_NOT_FOUND(1005 , "Not found any role" , HttpStatus.BAD_REQUEST),
+    UNAUTHENTICATED(1006 , "authentication failed" , HttpStatus.BAD_REQUEST),
+    TOKEN_INVALID(1007, "Token invalid" , HttpStatus.BAD_REQUEST),
+    TOKEN_EXPIRED(1008 , "Token expiration timed out" , HttpStatus.BAD_REQUEST),
+    TOKEN_TYPE_INVALID(1009 , "Token type is not refresh" , HttpStatus.BAD_REQUEST),
+    TOKEN_NOT_FOUND(1010 , "Refresh token not found in DB" , HttpStatus.BAD_REQUEST),
+    TOKEN_REVOKED(1011 , "Token exists in blacklists" , HttpStatus.BAD_REQUEST)
     ;
 
 

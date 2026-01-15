@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 
@@ -58,4 +59,6 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER )
     private Set<Role> roles;
 
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , orphanRemoval = true)
+    List<RefreshToken> tokens;
 }

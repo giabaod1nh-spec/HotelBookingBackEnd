@@ -9,5 +9,5 @@ public interface IUserService {
     UserCreationResponse createUser(UserCreationRequest request);
     UserCreationResponse getUser(String userId);
     List<UserCreationResponse> getAllUser();
-
+    void deleteUser(String userId);
 }
