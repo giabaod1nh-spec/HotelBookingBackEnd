@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.dto.ApiResponse;
 import org.baoxdev.hotelbooking_test.dto.request.AuthRequest;
 import org.baoxdev.hotelbooking_test.dto.request.IntroSpectRequest;
+import org.baoxdev.hotelbooking_test.dto.request.LogOutRequest;
 import org.baoxdev.hotelbooking_test.dto.request.RefreshTokenRequest;
 import org.baoxdev.hotelbooking_test.dto.response.AuthResponse;
 import org.baoxdev.hotelbooking_test.dto.response.IntroSpectResponse;
@@ -45,4 +46,11 @@ public class AuthController {
                 .build();
     }
 
+    @PostMapping("/logout")
+    public ApiResponse<Void> logoutToken(@RequestBody LogOutRequest request) throws ParseException, JOSEException {
+        authService.logOut(request);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .build();
+    }
 }

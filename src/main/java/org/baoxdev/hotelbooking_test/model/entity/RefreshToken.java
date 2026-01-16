@@ -19,7 +19,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long tokenId;
 
-    @Column(nullable = false , unique = true )
+    @Column(nullable = false , unique = true , length = 1000)
     String token;
 
     @ManyToOne(fetch = FetchType.EAGER)

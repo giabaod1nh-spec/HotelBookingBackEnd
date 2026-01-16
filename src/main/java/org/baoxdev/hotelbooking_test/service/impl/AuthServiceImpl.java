@@ -7,6 +7,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,10 @@ import org.baoxdev.hotelbooking_test.model.enums.TokenType;
 import org.baoxdev.hotelbooking_test.repository.RefreshTokenRepository;
 import org.baoxdev.hotelbooking_test.repository.UserRepository;
 import org.baoxdev.hotelbooking_test.service.interfaces.IAuthService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,19 +51,33 @@ public class AuthServiceImpl implements IAuthService {
     UserRepository userRepository;
     RefreshTokenRepository refreshTokenRepository;
     HttpServletRequest httpServletRequest;
-
-    PasswordEncoder encoder = new BCryptPasswordEncoder(10);
-    private final RedisTokenService redisTokenService;
+    RedisTokenService redisTokenService;
+    AuthenticationManager authenticationManager;
 
 
     @Override
     public AuthResponse checkAuthenticationUser(AuthRequest request) {
-        var password = userRepository.findUserByUserName(request.getUsername()).orElseThrow().getPassword();
+    //    var password = userRepository.findUserByUserName(request.getUsername()).orElseThrow().getPassword();
         var user = userRepository.findUserByUserName(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        boolean authenticate = encoder.matches(request.getPassword(),password);
+    //    boolean authenticate = encoder.matches(request.getPassword(),password);
 
-        if(!authenticate) throw new AppException(ErrorCode.AUTHENTICATED_FAILED);
+    //    if(!authenticate) throw new AppException(ErrorCode.AUTHENTICATED_FAILED);
 
+    //THAY VÌ CUSTOM CHECK TA SẼ CHECK BẰNG CHUẨN CỦA SPRING SECURITY
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(
+                        request.getUsername() , request.getPassword()));
+
+    //UsernamePaswordAuthenticationToken đc pass vào trong AuthenticationManager
+    //Authentication Manager configure use DaoAuthenticationProvider
+    //DaoAuthenticationProvider xét UserDetails trong UserDetailService
+    //Use PasswordEncoder để validate với password trong UserDetails
+
+    //Lưu object Authentication trả về trong SecurityContextHolder
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    //Generate token
         String accessToken = generateToken(user , TokenType.ACCESS , new Date(Instant.now().plus(1 , ChronoUnit.HOURS).toEpochMilli()));
 
         Date sessionExpire = new Date(Instant.now().plus(7 , ChronoUnit.DAYS).toEpochMilli());
@@ -74,7 +93,7 @@ public class AuthServiceImpl implements IAuthService {
         refreshTokenRepository.save(refreshToken0);
 
         return AuthResponse.builder()
-                .authenticated(authenticate)
+                .authenticated(true)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -98,6 +117,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponse refreshTokenAfterTimeOut(RefreshTokenRequest request) throws ParseException, JOSEException {
 
         SignedJWT signedJWT = verifyToken(request.getRefreshToken());
@@ -138,6 +158,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
+    @Transactional
     public void logOut(LogOutRequest request) throws ParseException, JOSEException {
         //Xoa refresh token
         refreshTokenRepository.deleteRefreshTokenByToken(request.getToken());
@@ -149,12 +170,14 @@ public class AuthServiceImpl implements IAuthService {
             String accessToken = header.substring(7);
             SignedJWT signedJWT = verifyToken(accessToken);
             Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
-            String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
+
+            //String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
 
             long ttl = expiration.getTime() - System.currentTimeMillis();
 
             if (ttl > 0) {
-                redisTokenService.blackListToken(jwtId, ttl);
+                redisTokenService.blackListToken(accessToken, ttl);
+                log.info("Success save token in Redis");
             }else{
                 log.info("Access token timeout no need to save in blacklist");
             }
@@ -168,7 +191,7 @@ public class AuthServiceImpl implements IAuthService {
         if(!CollectionUtils.isEmpty(user.getRoles()))
             user.getRoles().forEach(role ->{
                     stringJoiner.add(role.getRoleName());
-                    if (CollectionUtils.isEmpty(role.getPermissions()))
+                    if (!CollectionUtils.isEmpty(role.getPermissions()))
                         role.getPermissions().forEach(permission ->
                                 stringJoiner.add(permission.getPermissionName()));
             });
@@ -205,7 +228,7 @@ public class AuthServiceImpl implements IAuthService {
 
 
 
-    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+    protected SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier jwsVerifier = new MACVerifier(secretKey.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
