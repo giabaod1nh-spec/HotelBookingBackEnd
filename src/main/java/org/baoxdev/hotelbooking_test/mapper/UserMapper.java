@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.dto.request.UserCreationRequest;
+import org.baoxdev.hotelbooking_test.dto.request.UserUpdateRequest;
 import org.baoxdev.hotelbooking_test.dto.response.UserCreationResponse;
 import org.baoxdev.hotelbooking_test.exception.AppException;
 import org.baoxdev.hotelbooking_test.model.entity.Role;

@@ -1,0 +1,17 @@
+package org.baoxdev.hotelbooking_test.dto.request;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Data
+public class UserUpdateRequest {
+
+    String email;
+
+    String firstName;
+
+    String lastName;
+
+}

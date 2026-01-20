@@ -33,8 +33,8 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final String[]  PUBLIC_ENDPOINT = { "/user/create" , "/user/getAll", "/auth/login" , "/auth/refresh"
-     , "/auth/introspect"};
+    private final String[]  PUBLIC_ENDPOINT = { "/user/register" , "/auth/login" , "/auth/refresh"
+     , "/auth/introspect"  , "/permission/create" , "/role/create"};
     private final CustomJwtDecoder jwtDecoder;
 
     @Bean
@@ -57,6 +57,10 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.GET , PUBLIC_ENDPOINT)
                 .permitAll()
+                .requestMatchers(HttpMethod.GET , "/**").permitAll()
+                .requestMatchers(HttpMethod.POST , "/**").permitAll()
+                .requestMatchers(HttpMethod.PUT , "/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE , "/**").permitAll()
                 .anyRequest().authenticated()
         );
 
@@ -96,9 +100,12 @@ public class SecurityConfig {
 
             for (String s : scope.split(" ")) {
                 // ROLE_ cho role
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + s));
-                // permission giữ nguyên
-                authorities.add(new SimpleGrantedAuthority(s));
+                if(s.equals("USER") || s.equals("ADMIN")) {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + s));
+                }else {
+                    // permission giữ nguyên
+                    authorities.add(new SimpleGrantedAuthority(s));
+                }
             }
             return authorities;
         });

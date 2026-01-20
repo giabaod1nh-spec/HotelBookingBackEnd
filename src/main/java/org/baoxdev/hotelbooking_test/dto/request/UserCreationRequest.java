@@ -16,17 +16,17 @@ import java.util.Set;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreationRequest {
-    private String userName;
+    String userName;
 
-    private String email;
+    String email;
 
-    private String password;
+    String password;
 
-    private String firstName;
+    String firstName;
 
-    private String lastName;
+    String lastName;
 
-    private Set<String> roles;
+    Set<String> roles;
     //private List<Role> roles;
     //tao user , sau do quyen gan roles cho admin
 }

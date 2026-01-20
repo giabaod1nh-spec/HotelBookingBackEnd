@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "roles")
+@EntityListeners(AuditingEntityListener.class)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,8 +30,8 @@ public class Role {
     private String description;
 
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at")
+    @CreatedDate
+    @Column(name = "created_at" , updatable = false)
     private Instant created_at;
 
     @ManyToMany(fetch = FetchType.EAGER)

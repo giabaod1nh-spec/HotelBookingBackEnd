@@ -2,7 +2,13 @@ package org.baoxdev.hotelbooking_test.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.baoxdev.hotelbooking_test.model.enums.UserStatus;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.Instant;
 import java.util.List;
@@ -12,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 @Builder
 @Getter
@@ -40,19 +47,17 @@ public class User {
     @Column(name = "avatar_url" , nullable = true)
     private String avatar_url;
 
-    @ColumnDefault("true")
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @Column(name = "user_status")
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
 
-    @ColumnDefault("false")
-    @Column(name = "is_deleted")
-    private  Boolean isDeleted;
+    private UserStatus userStatus;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    @CreatedDate
     @Column(name = "delete_at")
     private Instant deleteAt;
 
@@ -60,5 +65,8 @@ public class User {
     private Set<Role> roles;
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , orphanRemoval = true)
-    List<RefreshToken> tokens;
+    private List<RefreshToken> tokens;
+
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , orphanRemoval = true)
+    private List<Booking> bookings;
 }
