@@ -6,22 +6,22 @@ server:
 
 spring:
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: "jdbc:postgresql://localhost:5432/hotel_booking_dev"
+    driver-class-name: your driver
+    url: your url
     username: postgres
-    password: 0911600379
+    password: your password
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
   data:
     redis:
-      host: redis-14597.c291.ap-southeast-2-1.ec2.cloud.redislabs.com
+      host: your host
       port: 14597
-      password: YnttLGa38uDs29MUZ132smcVDv4Icfzn
+      password: your password
       username: default
 
 cloudinary:
-  cloud-name: de2lvbq8f
-  api-key: 677342821317714
-  api-secret: nYYm8oLiIZx0D4rDVHIkD4yARSA
+  cloud-name: your cloud_name
+  api-key: your api_key
+  api-secret: your api_secret_key
