@@ -7,6 +7,7 @@ import org.baoxdev.hotelbooking_test.dto.ApiResponse;
 import org.baoxdev.hotelbooking_test.dto.request.PermissionRequest;
 import org.baoxdev.hotelbooking_test.dto.response.PermissionResponse;
 import org.baoxdev.hotelbooking_test.service.impl.PermissionServiceImpl;
+import org.baoxdev.hotelbooking_test.service.interfaces.IPermissionService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
 public class PermissionController {
-    PermissionServiceImpl permissionService;
+    IPermissionService permissionService;
 
     @GetMapping("/get/{permissionId}")
     public ApiResponse<PermissionResponse> getPermissionById(@PathVariable String permissionId){

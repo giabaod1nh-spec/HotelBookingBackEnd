@@ -7,6 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -57,7 +58,7 @@ public class User {
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @CreatedDate
+    @LastModifiedDate
     @Column(name = "delete_at")
     private Instant deleteAt;
 

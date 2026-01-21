@@ -11,6 +11,7 @@ import org.baoxdev.hotelbooking_test.dto.request.UserUpdateRequest;
 import org.baoxdev.hotelbooking_test.dto.response.UserCreationResponse;
 import org.baoxdev.hotelbooking_test.model.enums.UserStatus;
 import org.baoxdev.hotelbooking_test.service.impl.UserServiceImpl;
+import org.baoxdev.hotelbooking_test.service.interfaces.IUserService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -26,7 +27,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
 @Slf4j
 public class UserController {
-    UserServiceImpl userService;
+    IUserService userService;
     private final JsonMapper.Builder builder;
 
     @PostMapping("/register")

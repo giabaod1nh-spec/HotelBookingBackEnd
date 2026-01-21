@@ -1,55 +1,67 @@
 package org.baoxdev.hotelbooking_test.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.baoxdev.hotelbooking_test.model.enums.RoomStatus;
-import org.hibernate.annotations.ColumnDefault;
+import org.baoxdev.hotelbooking_test.model.enums.BookingStatus;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.math.BigDecimal;
+import java.sql.SQLType;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "rooms")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Builder
-public class Room {
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String roomId;
+    String bookingId;
+
+    String bookingCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hotelId") //FK
     Hotel hotel;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "roomTypeId") //Fk
-    RoomType roomType;
+    User user;
 
-    @OneToMany(mappedBy = "room" , cascade = CascadeType.ALL , orphanRemoval = true)
+    @OneToMany(mappedBy = "booking" , cascade = CascadeType.ALL , orphanRemoval = true)
     List<BookingRooms> bookingRooms;
 
-    String roomNumber;
+    Date checkInDate ;
+
+    Date checkOutDate;
+
+    @Column(name = "total_price" , precision = 10 , scale = 2)
+    BigDecimal totalPrice;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    RoomStatus roomStatus ;
+    BookingStatus bookingStatus;
+
+    Integer numGuest;
+
+    String guestName;
+
+    String guestEmail;
+
+    String guestPhone;
+
+    String specialRequest;
 
     @CreatedDate
-    @Column(name = "created_at" , nullable = false)
+    @Column(name = "created_at" , updatable = false)
     Instant createdAt;
 
     @LastModifiedDate
-    @Column(name = "update_at" , nullable = false)
-    Instant updateAt;
+    @Column(name = "updated_at")
+    Instant updatedAt;
 }

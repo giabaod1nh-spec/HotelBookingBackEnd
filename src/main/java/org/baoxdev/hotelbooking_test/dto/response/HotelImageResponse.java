@@ -4,16 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.baoxdev.hotelbooking_test.model.enums.RoomStatus;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoomResponse {
-    String roomId;
-
-    String roomNumber;
-
-    RoomStatus roomStatus;
+public class HotelImageResponse {
+    String hotelImageId;
+    String hotelImageUrl;
+    Boolean isPrimary;
 }

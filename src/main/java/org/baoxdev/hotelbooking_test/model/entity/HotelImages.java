@@ -5,20 +5,21 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class RoomTypeImages {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class HotelImages {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String roomTypeImageId;
+    String hotelImageId;
 
-    String roomImageUrl;
+    String hotelImageUrl;
 
     Boolean isPrimary;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    RoomType roomType;
+    Hotel hotel;
 }

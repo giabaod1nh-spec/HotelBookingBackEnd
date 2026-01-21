@@ -1,42 +1,72 @@
 package org.baoxdev.hotelbooking_test.model.entity;
 
 import jakarta.persistence.*;
-import org.baoxdev.hotelbooking_test.model.enums.Status;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import org.baoxdev.hotelbooking_test.model.enums.HotelStatus;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "hotels")
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String hotelId;
+    String hotelId;
 
-    private String hotelName;
+    String hotelName;
 
-    private String hotelDescription;
+    String hotelDescription;
 
-    private String hotelAddress;
+    String hotelAddress;
 
-    private String hotelCity;
+    String hotelCity;
 
-    private String hotelCountry;
+    String hotelCountry;
 
-    private String hotelPhone;
+    String hotelPhone;
 
-    private String hotelEmail;
+    String hotelEmail;
 
-    private Integer starRating;
+    Integer starRating;
 
-    @ColumnDefault("'ACTIVE'")
-    private String status;
+    @OneToMany(mappedBy = "hotel" , cascade = CascadeType.ALL , orphanRemoval = true)
+    List<Room> rooms;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "created_at")
-    private Instant createdAt;
+    @OneToMany(mappedBy = "hotel" , cascade = CascadeType.ALL , orphanRemoval = true)
+    List<RoomType> roomTypes;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    @OneToMany(mappedBy = "hotel" , cascade = CascadeType.ALL , orphanRemoval = true)
+    List<HotelImages> hotelImages;
+
+    @OneToMany(mappedBy = "hotel" , cascade = CascadeType.ALL , orphanRemoval = true)
+    List<Booking> bookings;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    HotelStatus hotelStatus;
+
+    @CreatedDate
+    @Column(name = "created_at" , updatable = false)
+    Instant createdAt;
+
+    @LastModifiedDate
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    Instant updatedAt;
 
 }

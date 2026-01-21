@@ -7,6 +7,7 @@ import org.baoxdev.hotelbooking_test.model.enums.RoomTypeStatus;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
@@ -43,7 +44,7 @@ public class RoomType {
     @Column(name = "created_at", updatable = false)
     Instant createdAt;
 
-    @CreatedDate
+    @LastModifiedDate
     @Column(name = "update_at")
     Instant updateAt;
 
@@ -55,6 +56,7 @@ public class RoomType {
     @JoinColumn(name = "hotel_id") //FK
     Hotel hotel;
 
+
     @OneToMany(mappedBy =  "roomType" , cascade = CascadeType.ALL , orphanRemoval = true)
     List<Room> rooms;
 
@@ -63,4 +65,7 @@ public class RoomType {
 
     @OneToMany(mappedBy = "roomType" , cascade = CascadeType.ALL , orphanRemoval = true)
     List<BookingRooms> bookingRooms;
+
+    @OneToMany(mappedBy = "roomType" , cascade = CascadeType.ALL , orphanRemoval = true)
+    List<RoomAvailability> roomAvailabilities;
 }

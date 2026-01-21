@@ -1,25 +1,29 @@
 package org.baoxdev.hotelbooking_test.controller;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.dto.ApiResponse;
 import org.baoxdev.hotelbooking_test.dto.request.RoomRequest;
 import org.baoxdev.hotelbooking_test.dto.response.RoomResponse;
 import org.baoxdev.hotelbooking_test.service.impl.RoomServiceImpl;
+import org.baoxdev.hotelbooking_test.service.interfaces.IRoomService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
 @RequestMapping("/room")
 public class RoomController {
-    RoomServiceImpl roomService;
+    IRoomService roomService;
 
-    @PostMapping("/create")
-    public ApiResponse<RoomResponse> createRoom (@RequestBody  RoomRequest request){
+    @PostMapping("/create/{roomTypeId}")
+    public ApiResponse<RoomResponse> createRoom (@PathVariable String roomTypeId , @RequestBody  RoomRequest request){
         return ApiResponse.<RoomResponse>builder()
                 .code(1000)
-                .result(roomService.createRome(request))
+                .result(roomService.createRome(roomTypeId , request))
                 .build();
     }
 

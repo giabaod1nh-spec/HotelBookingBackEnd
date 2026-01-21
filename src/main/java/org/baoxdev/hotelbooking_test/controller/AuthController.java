@@ -12,6 +12,7 @@ import org.baoxdev.hotelbooking_test.dto.request.RefreshTokenRequest;
 import org.baoxdev.hotelbooking_test.dto.response.AuthResponse;
 import org.baoxdev.hotelbooking_test.dto.response.IntroSpectResponse;
 import org.baoxdev.hotelbooking_test.service.impl.AuthServiceImpl;
+import org.baoxdev.hotelbooking_test.service.interfaces.IAuthService;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -21,7 +22,7 @@ import java.text.ParseException;
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
 @RequiredArgsConstructor
 public class AuthController {
-    AuthServiceImpl authService;
+    IAuthService authService;
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> checkPassword(@RequestBody AuthRequest request){

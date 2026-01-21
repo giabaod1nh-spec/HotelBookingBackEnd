@@ -8,6 +8,7 @@ import org.baoxdev.hotelbooking_test.dto.request.RoleRequest;
 import org.baoxdev.hotelbooking_test.dto.response.RoleResponse;
 import org.baoxdev.hotelbooking_test.model.entity.Role;
 import org.baoxdev.hotelbooking_test.service.impl.RoleServiceImpl;
+import org.baoxdev.hotelbooking_test.service.interfaces.IRoleService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/role")
 public class RoleController {
-    RoleServiceImpl roleService;
+    IRoleService roleService;
 
     @PostMapping("/create")
     public ApiResponse<RoleResponse> createRole(@RequestBody RoleRequest request){

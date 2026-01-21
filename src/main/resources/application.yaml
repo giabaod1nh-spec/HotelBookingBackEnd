@@ -3,6 +3,7 @@ server:
   servlet:
     context-path: /dev
 
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -19,3 +20,8 @@ spring:
       port: 14597
       password: YnttLGa38uDs29MUZ132smcVDv4Icfzn
       username: default
+
+cloudinary:
+  cloud-name: de2lvbq8f
+  api-key: 677342821317714
+  api-secret: nYYm8oLiIZx0D4rDVHIkD4yARSA

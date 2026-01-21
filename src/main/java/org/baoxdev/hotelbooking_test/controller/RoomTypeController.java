@@ -9,6 +9,7 @@ import org.baoxdev.hotelbooking_test.dto.request.RoomTypeRequest;
 import org.baoxdev.hotelbooking_test.dto.request.RoomTypeUpdateRequest;
 import org.baoxdev.hotelbooking_test.dto.response.RoomTypeResponse;
 import org.baoxdev.hotelbooking_test.service.impl.RoomTypeServiceImpl;
+import org.baoxdev.hotelbooking_test.service.interfaces.IRoomTypeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.json.JsonMapper;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
 public class RoomTypeController {
-    RoomTypeServiceImpl roomTypeService;
+    IRoomTypeService roomTypeService;
     private final JsonMapper.Builder builder;
 
     @PostMapping("/create/{hotelId}")
