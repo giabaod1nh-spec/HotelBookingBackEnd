@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -24,7 +25,7 @@ public class RoomAvailability {
     @GeneratedValue(strategy = GenerationType.UUID)
     String roomAvailId;
 
-    Date date;
+    LocalDate date;
 
     Integer availableCount;
 

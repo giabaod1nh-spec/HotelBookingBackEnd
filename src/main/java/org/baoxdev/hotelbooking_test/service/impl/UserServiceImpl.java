@@ -9,10 +9,12 @@ import org.baoxdev.hotelbooking_test.dto.request.UserUpdateRequest;
 import org.baoxdev.hotelbooking_test.dto.response.UserCreationResponse;
 import org.baoxdev.hotelbooking_test.exception.AppException;
 import org.baoxdev.hotelbooking_test.mapper.UserMapper;
+import org.baoxdev.hotelbooking_test.model.entity.EmailVerificationToken;
 import org.baoxdev.hotelbooking_test.model.entity.Hotel;
 import org.baoxdev.hotelbooking_test.model.entity.User;
 import org.baoxdev.hotelbooking_test.model.enums.ErrorCode;
 import org.baoxdev.hotelbooking_test.model.enums.UserStatus;
+import org.baoxdev.hotelbooking_test.repository.EmailVerifyTokenRepository;
 import org.baoxdev.hotelbooking_test.repository.UserRepository;
 import org.baoxdev.hotelbooking_test.service.interfaces.IUserService;
 import org.springframework.data.domain.Page;
@@ -23,7 +25,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,14 +37,34 @@ import java.util.List;
 public class UserServiceImpl implements IUserService {
     UserMapper userMapper;
     UserRepository userRepository;
+    EmailService emailService;
+    EmailVerifyTokenRepository emailVerifyTokenRepository;
 
     @Override
-    public UserCreationResponse createUser(UserCreationRequest request) {
+    public UserCreationResponse createUser(UserCreationRequest request) throws IOException {
         User user = userMapper.convertUserFromRequest(request);
 
         if(userRepository.existsUserByUserName(user.getUserName()) || userRepository.existsUserByEmail(user.getEmail())) {
-            throw new RuntimeException("Email hoac ten dang nhap da ton tai");
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
+
+        user.setUserStatus(UserStatus.PENDING_VERIFICATION);
+        userRepository.save(user);
+
+        //Token dung de verify email
+        String emailVerifyToken = UUID.randomUUID().toString();
+
+        EmailVerificationToken eve = EmailVerificationToken.builder()
+                .emailVerifyToken(emailVerifyToken)
+                .user(user)
+                .expiredAt(Instant.now().plus(24 , ChronoUnit.HOURS))
+                .build();
+
+        emailVerifyTokenRepository.save(eve);
+
+        //Goi den ham send email verify
+        emailService.emailVerification(user.getEmail(), user.getUserName(), emailVerifyToken);
+
 
         return userMapper.convertResponseFromUser(userRepository.save(user));
     }

@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -31,7 +32,7 @@ public class UserController {
     private final JsonMapper.Builder builder;
 
     @PostMapping("/register")
-    public ApiResponse<UserCreationResponse> createUser(@RequestBody UserCreationRequest request){
+    public ApiResponse<UserCreationResponse> createUser(@RequestBody UserCreationRequest request) throws IOException {
 
         return ApiResponse.<UserCreationResponse>builder()
                 .result(userService.createUser(request))

@@ -19,10 +19,13 @@ import org.baoxdev.hotelbooking_test.dto.request.RefreshTokenRequest;
 import org.baoxdev.hotelbooking_test.dto.response.AuthResponse;
 import org.baoxdev.hotelbooking_test.dto.response.IntroSpectResponse;
 import org.baoxdev.hotelbooking_test.exception.AppException;
+import org.baoxdev.hotelbooking_test.model.entity.EmailVerificationToken;
 import org.baoxdev.hotelbooking_test.model.entity.RefreshToken;
 import org.baoxdev.hotelbooking_test.model.entity.User;
 import org.baoxdev.hotelbooking_test.model.enums.ErrorCode;
 import org.baoxdev.hotelbooking_test.model.enums.TokenType;
+import org.baoxdev.hotelbooking_test.model.enums.UserStatus;
+import org.baoxdev.hotelbooking_test.repository.EmailVerifyTokenRepository;
 import org.baoxdev.hotelbooking_test.repository.RefreshTokenRepository;
 import org.baoxdev.hotelbooking_test.repository.UserRepository;
 import org.baoxdev.hotelbooking_test.service.interfaces.IAuthService;
@@ -53,7 +56,7 @@ public class AuthServiceImpl implements IAuthService {
     HttpServletRequest httpServletRequest;
     RedisTokenService redisTokenService;
     AuthenticationManager authenticationManager;
-
+    EmailVerifyTokenRepository emailVerifyTokenRepository;
 
     @Override
     public AuthResponse checkAuthenticationUser(AuthRequest request) {
@@ -188,6 +191,21 @@ public class AuthServiceImpl implements IAuthService {
         }
     }
 
+    @Override
+    public void verifyEmail(String token) {
+        EmailVerificationToken emailVerifyToken = emailVerifyTokenRepository.findByEmailVerifyToken(token);
+
+        if(emailVerifyToken.getExpiredAt().isBefore(Instant.now())){
+            throw new AppException(ErrorCode.VERIFICATION_TOKEN_INVALID);
+        }
+        //Xac thuc thanh cong gan user ACTIVE
+        User user = emailVerifyToken.getUser();
+        user.setUserStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        //Xoa entity emailVerifyToken
+        emailVerifyTokenRepository.delete(emailVerifyToken);
+    }
+
     private String buildScope(User user){
         StringJoiner stringJoiner = new StringJoiner(" ");
         if(!CollectionUtils.isEmpty(user.getRoles()))
@@ -227,7 +245,6 @@ public class AuthServiceImpl implements IAuthService {
               throw new AppException(ErrorCode.CREATETOKEN_FAILED);
         }
     }
-
 
 
     protected SignedJWT verifyToken(String token) throws JOSEException, ParseException {

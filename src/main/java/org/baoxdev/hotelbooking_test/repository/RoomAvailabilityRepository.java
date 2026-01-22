@@ -12,9 +12,9 @@ import java.util.List;
 
 @Repository
 public interface RoomAvailabilityRepository extends JpaRepository<RoomAvailability , String> {
-    List<RoomAvailability> findByRoomType_RoomTypeIdAndDateBetween(String roomTypeRoomTypeId, Date end, Date start);
+    List<RoomAvailability> findByRoomType_RoomTypeIdAndDateBetween(String roomTypeRoomTypeId, LocalDate end, LocalDate start);
 
-    boolean existsByRoomType_RoomTypeIdAndDate(String roomTypeRoomTypeId, Date date);
+    boolean existsByRoomType_RoomTypeIdAndDate(String roomTypeRoomTypeId, LocalDate date);
 
     @Modifying
     @Query("""
@@ -26,5 +26,15 @@ public interface RoomAvailabilityRepository extends JpaRepository<RoomAvailabili
            and ra.availableCount >= :qty
     """)
     int tryReserveOneDay(String roomTypeId, LocalDate date, int qty);
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+        update RoomAvailability ra
+           set ra.availableCount = ra.availableCount + :qty,
+               ra.version = ra.version + 1
+         where ra.roomType.roomTypeId = :roomTypeId
+           and ra.date = :date
+    """)
+    int releaseOneDay(String roomTypeId, Date date, int qty);
 
 }

@@ -54,4 +54,11 @@ public class AuthController {
                 .code(1000)
                 .build();
     }
+
+    @GetMapping("/verify-email")
+    public ApiResponse<Void> verifyEmail(@RequestParam String token){
+        authService.verifyEmail(token);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
 }

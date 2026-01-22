@@ -94,15 +94,15 @@ public class RoomTypeServiceImpl implements IRoomTypeService {
     private void generateAvailabilityIfMissing(RoomType roomType , LocalDate start , LocalDate end){
         List<RoomAvailability>  roomAvailabilities = new ArrayList<>();
 
-        for(LocalDate d = start ; d.isBefore(end) ; d.plusDays(1)){
+        for(LocalDate d = start ; d.isBefore(end) ; d = d.plusDays(1)){
             boolean exists = roomAvailabilityRepository.existsByRoomType_RoomTypeIdAndDate(roomType.getRoomTypeId()
-            , Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            , d);
 
             if (exists) continue;
 
             roomAvailabilities.add(RoomAvailability.builder()
                             .roomType(roomType)
-                            .date(Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                            .date(d)
                             .availableCount(roomType.getTotalRooms())
                             .price(roomType.getBasePrice())
                             .version(0)

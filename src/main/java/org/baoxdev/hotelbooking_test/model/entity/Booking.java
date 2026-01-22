@@ -1,7 +1,7 @@
 package org.baoxdev.hotelbooking_test.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.model.enums.BookingStatus;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -20,6 +20,11 @@ import java.util.List;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,10 +36,16 @@ public class Booking {
     Hotel hotel;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    RoomType roomType;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
     User user;
 
     @OneToMany(mappedBy = "booking" , cascade = CascadeType.ALL , orphanRemoval = true)
     List<BookingRooms> bookingRooms;
+
+    Integer quantity;
 
     Date checkInDate ;
 

@@ -22,8 +22,11 @@ public enum ErrorCode {
     IMAGE_NOT_FOUND(1016 , "Image not found" , HttpStatus.NOT_FOUND),
     ROOM_TYPE_NOT_FOUND(1017 , "Not found any room types" , HttpStatus.NOT_FOUND),
     ROOM_TYPE_IMAGE_NOT_FOUND(1018 , "Not found any room type images" , HttpStatus.NOT_FOUND),
-    ROOM_AVAILABLE_NOT_ENOUGH(1019 , "Not enough room left to book " , HttpStatus.NOT_FOUND)
-
+    ROOM_AVAILABLE_NOT_ENOUGH(1019 , "Not enough room left to book " , HttpStatus.NOT_FOUND),
+    BOOKING_NOT_FOUND(1020 , "Access denied to this booking" , HttpStatus.NOT_FOUND),
+    BOOKING_ACCESS_DENIED(1021 , "Access denied to this booking" , HttpStatus.FORBIDDEN),
+    BOOKING_CANNOT_CANCEL(1022 , "Cannot cancel this booking" , HttpStatus.BAD_REQUEST),
+    VERIFICATION_TOKEN_INVALID(1023, "Cannot find token in verify list" , HttpStatus.BAD_REQUEST),
     ;
 
 

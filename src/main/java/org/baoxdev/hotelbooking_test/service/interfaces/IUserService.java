@@ -9,10 +9,11 @@ import org.baoxdev.hotelbooking_test.model.enums.UserStatus;
 import org.hibernate.usertype.UserVersionType;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IUserService {
-    UserCreationResponse createUser(UserCreationRequest request);
+    UserCreationResponse createUser(UserCreationRequest request) throws IOException;
 
     UserCreationResponse getUser(String userId);
 

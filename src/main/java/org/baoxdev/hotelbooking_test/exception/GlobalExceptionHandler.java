@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handleAppException(AppException e){
         ErrorCode error = e.getErrorCode();
-        return ResponseEntity.badRequest().body(ApiResponse.builder()
+        return ResponseEntity.status(error.getHttpStatusCode()).body(ApiResponse.builder()
                         .code(error.getCode())
                         .message(error.getMessage())
                 .build());

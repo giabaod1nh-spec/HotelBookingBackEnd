@@ -1,10 +1,12 @@
 package org.baoxdev.hotelbooking_test.configuration;
 
+import com.sendgrid.SendGrid;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.exception.AppException;
 import org.baoxdev.hotelbooking_test.model.enums.ErrorCode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -37,6 +39,9 @@ public class SecurityConfig {
      , "/auth/introspect"  , "/permission/create" , "/role/create"};
     private final CustomJwtDecoder jwtDecoder;
 
+    @Value("${spring.sendgrid.api-key}")
+    private String apiKey;
+
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(10);
@@ -45,6 +50,11 @@ public class SecurityConfig {
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config){
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public SendGrid sendGrid(){
+        return new SendGrid(apiKey);
     }
 
 
@@ -112,9 +122,4 @@ public class SecurityConfig {
 
         return converter;
     }
-
-
-
-
-
 }
