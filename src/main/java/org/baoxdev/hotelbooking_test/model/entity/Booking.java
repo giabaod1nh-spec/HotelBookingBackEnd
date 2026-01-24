@@ -35,9 +35,6 @@ public class Booking {
     @ManyToOne(fetch = FetchType.LAZY)
     Hotel hotel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    RoomType roomType;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     User user;
@@ -45,7 +42,6 @@ public class Booking {
     @OneToMany(mappedBy = "booking" , cascade = CascadeType.ALL , orphanRemoval = true)
     List<BookingRooms> bookingRooms;
 
-    Integer quantity;
 
     Date checkInDate ;
 

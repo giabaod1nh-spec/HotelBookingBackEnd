@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public interface IAvailabilityService {
-    boolean checkAvailable(String roomTypeId , LocalDate checkOut , LocalDate checkIn , int quantity);
+    boolean checkAvailable(String roomTypeId , LocalDate checkIn , LocalDate checkOut , int quantity);
 
     void reserve(String roomTypeId , LocalDate checkIn , LocalDate checkOut , int quantity);
 

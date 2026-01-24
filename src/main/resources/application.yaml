@@ -3,8 +3,19 @@ server:
   servlet:
     context-path: /dev
 
-
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: noreplybookingxhotel@gmail.com
+    password: Dinhbaodeptrai123.
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: "jdbc:postgresql://localhost:5432/hotel_booking_dev"
@@ -14,6 +25,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  sendgrid:
+    api-key: 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
+    from-email: noreplybookingxhotel@gmail.com
+
   data:
     redis:
       host: redis-14597.c291.ap-southeast-2-1.ec2.cloud.redislabs.com
@@ -25,3 +40,6 @@ cloudinary:
   cloud-name: de2lvbq8f
   api-key: 677342821317714
   api-secret: nYYm8oLiIZx0D4rDVHIkD4yARSA
+
+app:
+  verification-link-base: ${VERIFICATION_LINK_BASE:http://localhost:8082/dev}

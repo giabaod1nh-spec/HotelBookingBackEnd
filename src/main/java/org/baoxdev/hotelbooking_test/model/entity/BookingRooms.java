@@ -1,9 +1,7 @@
 package org.baoxdev.hotelbooking_test.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,6 +14,9 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class BookingRooms {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,7 +25,7 @@ public class BookingRooms {
     @Column(name = "price_per_night" , precision = 10 , scale = 2)
     BigDecimal pricePerNight;
 
-    String bookingRoomStatus;
+    Integer quantity; // numbers of rooms of roomType that booked
 
     @Column(name = "actual_check_in_time")
     LocalDateTime actualCheckInTime;

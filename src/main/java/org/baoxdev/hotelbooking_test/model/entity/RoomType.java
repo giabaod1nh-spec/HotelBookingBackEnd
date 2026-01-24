@@ -56,8 +56,9 @@ public class RoomType {
     @JoinColumn(name = "hotel_id") //FK
     Hotel hotel;
 
-    @OneToMany(mappedBy = "roomType" , cascade = CascadeType.ALL , orphanRemoval = true)
-    List<Booking> bookings;
+
+    //@OneToMany(mappedBy = "roomType" , cascade = CascadeType.ALL , orphanRemoval = true)
+    //List<Booking> bookings;
 
     @OneToMany(mappedBy =  "roomType" , cascade = CascadeType.ALL , orphanRemoval = true)
     List<Room> rooms;

@@ -6,6 +6,7 @@ import org.baoxdev.hotelbooking_test.model.enums.BookingStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -25,6 +26,10 @@ public class BookingResponse {
     BookingStatus status;
     LocalDate checkInDate;
     LocalDate checkOutDate;
-    Integer quantity ;
+    Integer totalRooms ;
     BigDecimal totalPrice;
+
+    List<BookingRoomItemResponse> bookingRoomItemResponses;
+
+    List<BookingRoomResponse> assignedRooms; //See assigned rooms detail
 }

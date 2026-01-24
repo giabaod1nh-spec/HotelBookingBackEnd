@@ -27,6 +27,8 @@ public enum ErrorCode {
     BOOKING_ACCESS_DENIED(1021 , "Access denied to this booking" , HttpStatus.FORBIDDEN),
     BOOKING_CANNOT_CANCEL(1022 , "Cannot cancel this booking" , HttpStatus.BAD_REQUEST),
     VERIFICATION_TOKEN_INVALID(1023, "Cannot find token in verify list" , HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_CONFIRMED(1024 ,"Booking is not confirmed , check again" , HttpStatus.BAD_REQUEST),
+    INSUFFIECNT_ROOM(1025 , "Insufficent room for booking, check again" , HttpStatus.BAD_REQUEST)
     ;
 
 
