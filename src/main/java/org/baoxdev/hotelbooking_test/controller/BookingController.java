@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.dto.ApiResponse;
 import org.baoxdev.hotelbooking_test.dto.request.BookingRequest;
+import org.baoxdev.hotelbooking_test.dto.request.CheckInRequest;
 import org.baoxdev.hotelbooking_test.dto.response.BookingResponse;
+import org.baoxdev.hotelbooking_test.service.impl.BookingServiceImpl;
 import org.baoxdev.hotelbooking_test.service.interfaces.IBookingService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,22 +23,21 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
 
 public class BookingController {
-    IBookingService bookingService;
+    BookingServiceImpl bookingService;
 
     private String getCurrentUserName(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
     }
 
-    @PostMapping("/create/{hotelId}/{roomTypeId}")
+    @PostMapping("/create/{hotelId}")
     public ApiResponse<BookingResponse> createBooking(
             @PathVariable String hotelId,
-            @PathVariable String roomTypeId,
             @RequestBody BookingRequest request
             ){
         return ApiResponse.<BookingResponse>builder()
                 .code(1000)
-                .result(bookingService.createBooking(hotelId , roomTypeId , request, getCurrentUserName()))
+                .result(bookingService.createBooking(hotelId , request, getCurrentUserName()))
                 .build();
     }
 
@@ -57,6 +58,7 @@ public class BookingController {
                 .build();
     }
 
+
     @PutMapping("cancel/{bookingId}")
     public ApiResponse<Void> cancelBooking(@PathVariable String bookingId){
         bookingService.cancel(bookingId , getCurrentUserName());
@@ -65,5 +67,15 @@ public class BookingController {
                 .build();
     }
 
+    @PutMapping("/checkIn/{bookingId}")
+    public ApiResponse<Void> checkInHotel(@PathVariable String bookingId ,
+                                          @RequestBody CheckInRequest request
+                                          ) {
+        bookingService.checkIn(bookingId, request);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Check in thanh cong")
+                .build();
+    }
 
 }

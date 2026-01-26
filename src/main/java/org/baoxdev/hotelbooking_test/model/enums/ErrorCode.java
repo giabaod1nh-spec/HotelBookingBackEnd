@@ -23,12 +23,17 @@ public enum ErrorCode {
     ROOM_TYPE_NOT_FOUND(1017 , "Not found any room types" , HttpStatus.NOT_FOUND),
     ROOM_TYPE_IMAGE_NOT_FOUND(1018 , "Not found any room type images" , HttpStatus.NOT_FOUND),
     ROOM_AVAILABLE_NOT_ENOUGH(1019 , "Not enough room left to book " , HttpStatus.NOT_FOUND),
+    ROOM_NOT_AVAILABLE(1028 , "Room status is not available" , HttpStatus.BAD_REQUEST),
     BOOKING_NOT_FOUND(1020 , "Access denied to this booking" , HttpStatus.NOT_FOUND),
     BOOKING_ACCESS_DENIED(1021 , "Access denied to this booking" , HttpStatus.FORBIDDEN),
     BOOKING_CANNOT_CANCEL(1022 , "Cannot cancel this booking" , HttpStatus.BAD_REQUEST),
     VERIFICATION_TOKEN_INVALID(1023, "Cannot find token in verify list" , HttpStatus.BAD_REQUEST),
     BOOKING_NOT_CONFIRMED(1024 ,"Booking is not confirmed , check again" , HttpStatus.BAD_REQUEST),
-    INSUFFIECNT_ROOM(1025 , "Insufficent room for booking, check again" , HttpStatus.BAD_REQUEST)
+    INSUFFIECNT_ROOM(1025 , "Insufficent room for booking, check again" , HttpStatus.BAD_REQUEST),
+    BOOKING_ROOM_NOT_FOUND(1026 , "Booking room not found" , HttpStatus.BAD_REQUEST),
+    ROOM_TYPE_MISMATCHED(1027 , "RoomType and Rome not matched type" , HttpStatus.BAD_REQUEST),
+    LOCK_NOT_ACQUIRED(1028 , "Lock not acquired" , HttpStatus.LOCKED),
+    LOCK_IS_BUSY(1029 , "Lock is busy , user please try again" ,HttpStatus.LOCKED);
     ;
 
 

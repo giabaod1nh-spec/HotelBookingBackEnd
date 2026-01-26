@@ -13,4 +13,8 @@ public interface BookingRoomRepository extends JpaRepository<BookingRooms , Stri
             "JOIN FETCH br.roomType " +
             "where br.booking.bookingId = :bookingId")
     List<BookingRooms> findByBookingIdWithRoomType(String bookingId);
+
+    //List<BookingRooms> findByBooking_BookingId(String bookingBookingId);
+
+    List<BookingRooms> findByBooking_BookingId(String bookingBookingId);
 }

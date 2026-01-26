@@ -12,6 +12,6 @@ public interface IBookingService {
     BookingResponse getById(String bookingId);
     List<BookingResponse> listMyBookings(String currentUserName);
     void cancel(String bookingId, String currentUserName);
-    BookingResponse checkIn(String bookingId, CheckInRequest request);
-    BookingResponse checkOut(String bookingId);
+    void checkIn(String bookingId, CheckInRequest request);
+    void checkOut(String bookingId);
 }

@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.dto.request.BookingRequest;
 import org.baoxdev.hotelbooking_test.dto.request.BookingRoomItemRequest;
 import org.baoxdev.hotelbooking_test.dto.request.CheckInRequest;
+import org.baoxdev.hotelbooking_test.dto.request.RoomAssignmentRequest;
 import org.baoxdev.hotelbooking_test.dto.response.BookingResponse;
 import org.baoxdev.hotelbooking_test.dto.response.BookingRoomItemResponse;
 import org.baoxdev.hotelbooking_test.exception.AppException;
@@ -14,6 +15,7 @@ import org.baoxdev.hotelbooking_test.mapper.BookingMapper;
 import org.baoxdev.hotelbooking_test.model.entity.*;
 import org.baoxdev.hotelbooking_test.model.enums.BookingStatus;
 import org.baoxdev.hotelbooking_test.model.enums.ErrorCode;
+import org.baoxdev.hotelbooking_test.model.enums.RoomStatus;
 import org.baoxdev.hotelbooking_test.repository.*;
 import org.baoxdev.hotelbooking_test.service.interfaces.IAvailabilityService;
 import org.baoxdev.hotelbooking_test.service.interfaces.IBookingService;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.awt.print.Book;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ public class BookingServiceImpl implements IBookingService {
     BookingRepository bookingRepository;
     HotelRepository hotelRepository;
     RoomTypeRepository roomTypeRepository;
+    RoomRepository roomRepository;
     IAvailabilityService availabilityService;
     UserRepository userRepository;
     BookingMapper bookingMapper;
@@ -218,33 +222,79 @@ public class BookingServiceImpl implements IBookingService {
         booking.setBookingStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
-
     }
 
     @Transactional
     @Override
-    public BookingResponse checkIn(String bookingId, CheckInRequest request) {
+    public void checkIn(String bookingId, CheckInRequest request) {
+
+        // 1.Get Booking
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(()
                 -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
-        //Validate booking status , if payment done , status CONFIRMED
-        if(booking.getBookingStatus() != BookingStatus.CHECK_IN){
+        //2. Validate booking status , if payment done , status CONFIRMED
+        if(booking.getBookingStatus() != BookingStatus.CONFIRMED){
             throw new AppException(ErrorCode.BOOKING_NOT_CONFIRMED);
         }
+        //3. Lay ra bookingRoom tu Booking
+        List<BookingRooms> bookingRooms = bookingRoomRepository.findByBooking_BookingId(bookingId);
 
-        //Check room count trong booking = trong checkInRequest ko
-        //if(booking.getQuantity() != request.getRoomId().size()){
-            //throw  new AppException(ErrorCode.INSUFFIECNT_ROOM);
-        //}
+        //4 Assign Room da chon cho Booking Rooms
+        for(RoomAssignmentRequest req : request.getRooms()){
+            BookingRooms br = bookingRooms.stream()
+                    .filter(bookingRoom ->bookingRoom.getBookingRoomId().equals(req.getBookingRoomId()))
+                    .findFirst()
+                    .orElseThrow(() ->new AppException(ErrorCode.BOOKING_ROOM_NOT_FOUND));
 
-        //If user booking 2 roomType , validate room belong to correct roomType
+            Room room = roomRepository.findById(req.getRoomId())
+                    .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        return null;
+            //Kiem tra roomType co match voi BookingRoom ko
+            if(!room.getRoomType().getRoomTypeId().equals(br.getRoomType().getRoomTypeId())){
+                throw  new AppException(ErrorCode.ROOM_TYPE_MISMATCHED);
+            }
+
+            //Kiem tra roomStatus co available ko
+            if(room.getRoomStatus() != RoomStatus.AVAILABLE){
+                throw  new AppException(ErrorCode.ROOM_NOT_AVAILABLE);
+            }
+            //Assign room vao BookingRoom
+            br.setRoom(room);
+            br.setActualCheckInTime(LocalDateTime.now());
+
+            //Update room status
+            room.setRoomStatus(RoomStatus.OCCUPIED);
+            roomRepository.save(room);
+        }
+
+        //Update booking status
+        booking.setBookingStatus(BookingStatus.CHECK_IN);
+        bookingRepository.save(booking);
+        //Luu lai toan bo bookingrooms sau khi gan room
+        bookingRoomRepository.saveAll(bookingRooms);
+
+        //Bad code N+ 1 QUERY
+        //List<BookingRooms> brs = request.getRooms().stream().map(roomAssign ->{
+                //Room room = roomRepository.findById(roomAssign.getRoomId()).orElseThrow(()
+                    //-> new AppException(ErrorCode.ROOM_NOT_FOUND));
+
+                //BookingRooms bookingRooms = bookingRoomRepository.findById(roomAssign.getBookingRoomId())
+                        //.orElseThrow(() -> new AppException(ErrorCode.BOOKING_ROOM_NOT_FOUND));
+                //Set room 101 belongs to booking Room br-101
+                //bookingRooms.setRoom(room);
+                //room.setRoomStatus(RoomStatus.OCCUPIED);
+                //roomRepository.save(room);
+                //In check-in proccess
+                //bookingRooms.setActualCheckInTime(LocalDateTime.now());
+                //booking.setBookingStatus(BookingStatus.CHECK_IN);
+                //bookingRoomRepository.save(bookingRooms);
+
+                //return bookingRooms;
+                //}).toList();
     }
 
     @Override
-    public BookingResponse checkOut(String bookingId) {
-        return null;
+    public void checkOut(String bookingId) {
     }
 
     private String generateCode(){

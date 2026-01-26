@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.baoxdev.hotelbooking_test.exception.AppException;
 import org.baoxdev.hotelbooking_test.model.entity.RoomAvailability;
 import org.baoxdev.hotelbooking_test.model.enums.ErrorCode;
@@ -21,8 +22,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
+@Slf4j(topic = "AVAILABILITY_SERVICE")
 public class AvailabilityServiceImpl implements IAvailabilityService {
     RoomAvailabilityRepository roomAvailabilityRepository;
+    DistributedLockService lockService;
 
 
     @Override
@@ -43,15 +46,24 @@ public class AvailabilityServiceImpl implements IAvailabilityService {
 
     @Transactional
     @Override
-    public void reserve(String roomTypeId, LocalDate checkOut, LocalDate checkin, int quantity){
+    public void reserve(String roomTypeId, LocalDate checkIn, LocalDate checkOut, int quantity){
+        //Create lock key for specific roomType and date range
+        String lockKey = buildAvailabilityLockKey(roomTypeId ,checkIn , checkOut );
 
-         for(LocalDate d = checkin; d.isBefore(checkOut); d = d.plusDays(1)){
+        lockService.executeWithLock(lockKey , 10 , () -> {
 
-             int updated = roomAvailabilityRepository.tryReserveOneDay(roomTypeId , d , quantity);
-             if(updated == 0){
-                 throw new AppException(ErrorCode.ROOM_AVAILABLE_NOT_ENOUGH);
-             }
-        }
+            for (LocalDate d = checkIn; d.isBefore(checkOut); d = d.plusDays(1)) {
+
+                int updated = roomAvailabilityRepository.tryReserveOneDay(roomTypeId, d, quantity);
+                if (updated == 0) {
+                    throw new AppException(ErrorCode.ROOM_AVAILABLE_NOT_ENOUGH);
+                }
+            }
+
+            log.info("Successfully reserved {} rooms for roomType = {} , dates = {} to {}" ,
+                    quantity , roomTypeId , checkIn , checkOut);
+            return null;
+        });
     }
 
     @Override
@@ -75,5 +87,9 @@ public class AvailabilityServiceImpl implements IAvailabilityService {
         }
     }
 
+    private String buildAvailabilityLockKey(String roomTypeId, LocalDate checkIn, LocalDate checkOut) {
+        return String.format("availability:roomType:%s:dates:%s:%s",
+                roomTypeId, checkIn, checkOut);
+    }
 
 }
