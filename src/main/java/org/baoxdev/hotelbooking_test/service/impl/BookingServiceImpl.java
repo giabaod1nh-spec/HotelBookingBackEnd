@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.baoxdev.hotelbooking_test.dto.request.BookingRequest;
 import org.baoxdev.hotelbooking_test.dto.request.BookingRoomItemRequest;
 import org.baoxdev.hotelbooking_test.dto.request.CheckInRequest;
@@ -16,6 +17,7 @@ import org.baoxdev.hotelbooking_test.model.entity.*;
 import org.baoxdev.hotelbooking_test.model.enums.BookingStatus;
 import org.baoxdev.hotelbooking_test.model.enums.ErrorCode;
 import org.baoxdev.hotelbooking_test.model.enums.RoomStatus;
+import org.baoxdev.hotelbooking_test.model.enums.BookingStatus;
 import org.baoxdev.hotelbooking_test.repository.*;
 import org.baoxdev.hotelbooking_test.service.interfaces.IAvailabilityService;
 import org.baoxdev.hotelbooking_test.service.interfaces.IBookingService;
@@ -34,6 +36,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
+@Slf4j(topic = "BOOKING_SERVICE")
 public class BookingServiceImpl implements IBookingService {
     BookingRepository bookingRepository;
     HotelRepository hotelRepository;
@@ -43,6 +46,8 @@ public class BookingServiceImpl implements IBookingService {
     UserRepository userRepository;
     BookingMapper bookingMapper;
     BookingRoomRepository bookingRoomRepository;
+    BookingExpirationService bookingExpirationService;
+    ReviewRepository reviewRepository;
 
     @Transactional
     @Override
@@ -75,8 +80,8 @@ public class BookingServiceImpl implements IBookingService {
                 .bookingCode(generateCode())
                 .hotel(hotel)
                 //.bookingRooms()
-                .checkInDate(Date.valueOf(request.getCheckInDate()))
-                .checkOutDate(Date.valueOf(request.getCheckOutDate()))
+                .checkInDate(request.getCheckInDate())
+                .checkOutDate(request.getCheckOutDate())
                 .bookingStatus(BookingStatus.PENDING)
                 .numGuest(request.getNumGuests())
                 .guestName(request.getGuestName())
@@ -106,21 +111,16 @@ public class BookingServiceImpl implements IBookingService {
             }
 
             //Check availbility xem tung loai roomType co du phong dat ko
-            if(! availabilityService
+            if(!availabilityService
                     .checkAvailable(roomItem.getRoomTypeId()
-                            ,request.getCheckInDate()
+                            , request.getCheckInDate()
                             , request.getCheckOutDate()
                             , roomItem.getQuantity())){
+                log.info("Loi o phan check Avail trong create");
                 throw new AppException(ErrorCode.ROOM_AVAILABLE_NOT_ENOUGH);
             }
 
-            //Reserve (Đặt chỗ cho từng yêu cầu roomType
-            availabilityService.reserve(roomItem.getRoomTypeId(),
-                    request.getCheckInDate() ,
-                    request.getCheckOutDate(),
-                    roomItem.getQuantity());
-
-            //Calculate price subtotal -> pricePerNight * quantity * nights
+            //Calculate price subtotal   -> pricePerNight * quantity * nights
             BigDecimal subTotal = availabilityService
                     .calculateTotalPrice(roomItem.getRoomTypeId(),
                             request.getCheckInDate(),
@@ -128,6 +128,13 @@ public class BookingServiceImpl implements IBookingService {
                             roomItem.getQuantity());
 
             totalPrice = totalPrice.add(subTotal);
+
+            log.info(totalPrice + "tong tien ko loi");
+            //Reserve (Đặt chỗ cho từng yêu cầu roomType
+            availabilityService.reserve(roomItem.getRoomTypeId(),
+                    request.getCheckInDate() ,
+                    request.getCheckOutDate(),
+                    roomItem.getQuantity());
 
             //Create bookingRoom entity
             BookingRooms bookingRooms = BookingRooms.builder()
@@ -144,6 +151,8 @@ public class BookingServiceImpl implements IBookingService {
         //set Total Price after calculate in booking
         booking.setTotalPrice(totalPrice);
         bookingRepository.save(booking);
+        //Scheduled cancel booking after 15 min neu ko tra tien
+        bookingExpirationService.scheduleExpiration(booking.getBookingId());
 
         long nights = ChronoUnit.DAYS.between(request.getCheckInDate() , request.getCheckOutDate());
         return bookingMapper.buildBookingResponse(booking , bookingRoomsList , nights);
@@ -157,10 +166,21 @@ public class BookingServiceImpl implements IBookingService {
         List<BookingRooms> bookingRooms = bookingRoomRepository.findByBookingIdWithRoomType(bookingId);
 
         long nights = ChronoUnit.DAYS.between(
-                booking.getCheckInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                , booking.getCheckOutDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                booking.getCheckInDate()
+                , booking.getCheckOutDate());
 
         return bookingMapper.buildBookingResponse(booking, bookingRooms , nights);
+    }
+
+    @Override
+    public BookingResponse getByBookingCode(String bookingCode) {
+        Booking booking = bookingRepository.findByBookingCode(bookingCode)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        List<BookingRooms> bookingRooms = bookingRoomRepository.findByBookingIdWithRoomType(booking.getBookingId());
+        long nights = ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
+
+        return bookingMapper.buildBookingResponse(booking, bookingRooms, nights);
     }
 
     @Override
@@ -174,11 +194,29 @@ public class BookingServiceImpl implements IBookingService {
             List<BookingRooms> bookingRooms = bookingRoomRepository.findByBookingIdWithRoomType(booking.getBookingId());
 
             long nights = ChronoUnit.DAYS.between(
-                    booking.getCheckInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() ,
-                    booking.getCheckOutDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    booking.getCheckInDate() ,
+                    booking.getCheckOutDate());
 
             return bookingMapper.buildBookingResponse(booking , bookingRooms , nights);
         }).toList();
+    }
+
+    @Override
+    public List<BookingResponse> getReviewableBookings(String currentUserName) {
+        User user = userRepository.findUserByUserName(currentUserName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        List<Booking> bookings = bookingRepository.findByUser_UserIdOrderByCreatedAtDesc(user.getUserId());
+
+        return bookings.stream()
+                .filter(b -> b.getBookingStatus() == BookingStatus.CHECK_OUT)
+                .filter(b -> !reviewRepository.existsByBooking_BookingId(b.getBookingId()))
+                .map(booking -> {
+                    List<BookingRooms> bookingRooms = bookingRoomRepository.findByBookingIdWithRoomType(booking.getBookingId());
+                    long nights = ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
+                    return bookingMapper.buildBookingResponse(booking, bookingRooms, nights);
+                })
+                .toList();
     }
 
     @Override
@@ -213,8 +251,8 @@ public class BookingServiceImpl implements IBookingService {
         //Cancel phong cho moi loai roomType trong booking
         for(BookingRooms br : bookingRooms){
             availabilityService.release(br.getRoomType().getRoomTypeId() ,
-                    booking.getCheckInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-                    booking.getCheckOutDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                    booking.getCheckInDate(),
+                    booking.getCheckOutDate(),
                     br.getQuantity()
                     );
         }
@@ -295,6 +333,34 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public void checkOut(String bookingId) {
+        // 1.Get Booking
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(()
+                -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        //2. Validate booking status , if payment done , status CONFIRMED
+        if(booking.getBookingStatus() != BookingStatus.CHECK_IN){
+            throw new AppException(ErrorCode.BOOKING_NOT_CHECK_IN);
+        }
+
+        //Lay ra BookingRoom tu Booking de thao tac
+        List<BookingRooms> bkrooms = bookingRoomRepository.findByBooking_BookingId(bookingId);
+
+        List<BookingRooms> bookingRooms = bkrooms.stream()
+                .map(bkr -> {
+                    bkr.setActualCheckOutTime(LocalDateTime.now());
+
+                    Room room = roomRepository.findById(bkr.getRoom().getRoomId())
+                            .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+                    //Update room status sau khi khach check out
+                    room.setRoomStatus(RoomStatus.AVAILABLE);
+                    roomRepository.save(room);
+                    return bookingRoomRepository.save(bkr);
+                }).toList();
+
+
+        //Update booking status sang check_out
+        booking.setBookingStatus(BookingStatus.CHECK_OUT);
+        bookingRepository.save(booking);
     }
 
     private String generateCode(){

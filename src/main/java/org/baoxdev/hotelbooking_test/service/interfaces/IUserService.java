@@ -17,6 +17,8 @@ public interface IUserService {
 
     UserCreationResponse getUser(String userId);
 
+    UserCreationResponse getCurrentUser(String username);
+
     UserCreationResponse updateUser(String userId, UserUpdateRequest request);
 
     List<UserCreationResponse> getAllUser();

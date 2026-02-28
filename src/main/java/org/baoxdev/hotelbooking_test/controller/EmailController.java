@@ -28,6 +28,7 @@ public class EmailController {
     @GetMapping("/verify-email")
     public ApiResponse<Void> verifyEmailFromUser(@RequestParam String userEmail , @RequestParam String userName) throws IOException {
         //emailService.emailVerification(userEmail , userName , token);
+        //Ham duoc goi trong userService
         return ApiResponse.<Void>
                 builder().build();
     }

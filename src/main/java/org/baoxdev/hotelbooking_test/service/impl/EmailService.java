@@ -10,6 +10,7 @@ import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.baoxdev.hotelbooking_test.model.entity.Payments;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -104,4 +105,5 @@ public class EmailService {
             throw new RuntimeException("Failed to send email: " + response.getBody());
         }
     }
+
 }

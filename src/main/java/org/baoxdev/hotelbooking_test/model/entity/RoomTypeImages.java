@@ -18,6 +18,7 @@ public class RoomTypeImages {
 
     String roomImageUrl;
 
+
     Boolean isPrimary;
     @ManyToOne(fetch = FetchType.LAZY)
     RoomType roomType;

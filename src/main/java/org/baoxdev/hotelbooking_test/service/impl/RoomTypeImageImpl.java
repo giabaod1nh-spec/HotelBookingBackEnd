@@ -3,6 +3,7 @@ package org.baoxdev.hotelbooking_test.service.impl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.baoxdev.hotelbooking_test.dto.response.CloudinarySaveResponse;
 import org.baoxdev.hotelbooking_test.dto.response.HotelImageResponse;
 import org.baoxdev.hotelbooking_test.dto.response.RoomTypeImageResponse;
 import org.baoxdev.hotelbooking_test.exception.AppException;
@@ -43,11 +44,11 @@ public class RoomTypeImageImpl implements IRoomTypeImageService {
         List<RoomTypeImageResponse> responses = new ArrayList<>();
         //Upload tung file
         for(MultipartFile file : files){
-            String imageUrl = cloudinaryService.upLoadFile(file);
+            CloudinarySaveResponse response = cloudinaryService.upLoadFile(file);
 
             //Create first RoomTypeImage
             RoomTypeImages roomTypeImages = RoomTypeImages.builder()
-                    .roomImageUrl(imageUrl)
+                    .roomImageUrl(response.getImageUrl())
                     .isPrimary(isFirstImage)
                     .roomType(roomType)
                     .build();

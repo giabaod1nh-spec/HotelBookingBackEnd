@@ -3,13 +3,19 @@ package org.baoxdev.hotelbooking_test.service.impl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.baoxdev.hotelbooking_test.dto.request.AssignAmenitiesRequest;
 import org.baoxdev.hotelbooking_test.dto.request.HotelRequest;
+import org.baoxdev.hotelbooking_test.dto.request.HotelSearchRequest;
 import org.baoxdev.hotelbooking_test.dto.response.HotelResponse;
+import org.baoxdev.hotelbooking_test.dto.response.HotelSearchResponse;
+import org.baoxdev.hotelbooking_test.dto.response.PageResponse;
 import org.baoxdev.hotelbooking_test.exception.AppException;
 import org.baoxdev.hotelbooking_test.mapper.HotelMapper;
+import org.baoxdev.hotelbooking_test.model.entity.Amenities;
 import org.baoxdev.hotelbooking_test.model.entity.Hotel;
 import org.baoxdev.hotelbooking_test.model.enums.ErrorCode;
 import org.baoxdev.hotelbooking_test.model.enums.HotelStatus;
+import org.baoxdev.hotelbooking_test.repository.AmenityRepository;
 import org.baoxdev.hotelbooking_test.repository.HotelRepository;
 import org.baoxdev.hotelbooking_test.service.interfaces.IHotelService;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +25,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +35,8 @@ import java.util.List;
 public class HotelServiceImpl implements IHotelService {
      HotelRepository hotelRepository;
      HotelMapper hotelMapper;
+     AmenityRepository amenityRepository;
+
     @Override
     public HotelResponse createHotel(HotelRequest request){
         Hotel hotel = hotelMapper.convertHotelFromCreateRequest(request);
@@ -52,6 +62,7 @@ public class HotelServiceImpl implements IHotelService {
         hotel.setHotelName(request.getHotelName());
         hotel.setHotelPhone(request.getHotelPhone());
 
+
         return hotelMapper.convertResponseFromHotel(hotelRepository.save(hotel));
     }
 
@@ -59,7 +70,28 @@ public class HotelServiceImpl implements IHotelService {
     public void deleteHotel(String hotelId) {
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new AppException(ErrorCode.HOTEL_NOT_FOUND));
         hotel.setHotelStatus(HotelStatus.CLOSED);
+        hotelRepository.save(hotel);
     }
+
+    @Override
+    public void assignAmenitiesToHotel(String hotelId, AssignAmenitiesRequest request) {
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new AppException(ErrorCode.HOTEL_NOT_FOUND));
+
+        Set<Amenities> amenities = new HashSet<>();
+        if(request.getAmenitiesName() != null){
+            for(var amenityName : request.getAmenitiesName()){
+                if(amenityName != null){
+                  var amenity = amenityRepository.findByAmenityName(amenityName);
+                  amenities.add(amenity);
+                }
+            }
+        }
+
+        hotel.setAmenities(amenities);
+        hotelRepository.save(hotel);
+    }
+
 
     @Override
     public List<HotelResponse> getAllHotelFromPagination(int page, int size, String sortBy, String direction, String city, String country, Integer starRating) {
@@ -89,6 +121,28 @@ public class HotelServiceImpl implements IHotelService {
                 .toList();
     }
 
+    @Override
+    public void deleteAmenityFromHotel(String hotelId, String amenityId) {
+              Hotel hotel = hotelRepository.findById(hotelId)
+                      .orElseThrow(() -> new AppException(ErrorCode.HOTEL_NOT_FOUND));
+
+              Amenities amenity = amenityRepository.findById(amenityId)
+                      .orElseThrow(() -> new AppException(ErrorCode.AMENITY_NOT_FOUND));
+
+              Set<Amenities> amenities = hotel.getAmenities();
+
+              //Dieu kien de xoa amenities
+              amenities.removeIf(amen -> amen.equals(amenity));
+              //Luu lai amenities moi
+              hotel.setAmenities(amenities);
+              //Luu hotel lai voi amenities moi
+              hotelRepository.save(hotel);
+    }
+
+    @Override
+    public PageResponse<HotelSearchResponse> searchHotels(HotelSearchRequest request) {
+        return null;
+    }
 
 
 }

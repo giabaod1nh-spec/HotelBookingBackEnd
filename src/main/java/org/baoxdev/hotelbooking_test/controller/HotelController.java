@@ -1,9 +1,11 @@
 package org.baoxdev.hotelbooking_test.controller;
 
+import com.cloudinary.Api;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.dto.ApiResponse;
+import org.baoxdev.hotelbooking_test.dto.request.AssignAmenitiesRequest;
 import org.baoxdev.hotelbooking_test.dto.request.HotelRequest;
 import org.baoxdev.hotelbooking_test.dto.response.HotelResponse;
 import org.baoxdev.hotelbooking_test.model.entity.Hotel;
@@ -36,12 +38,41 @@ public class HotelController {
                 .build();
     }
 
-    @DeleteMapping
+    @PutMapping("/update/{hotelId}")
+    ApiResponse<HotelResponse> updateHotelInfo(@PathVariable String hotelId , @RequestBody HotelRequest request){
+        return ApiResponse.<HotelResponse>builder()
+                .code(1000)
+                .message("update hotel info success")
+                .result(hotelService.updateHotelInfo(hotelId , request))
+                .build();
+    }
+
+    @DeleteMapping("/{hotelId}")
     ApiResponse<Void>  deleteHotel(@PathVariable String hotelId){
         hotelService.deleteHotel(hotelId);
         return ApiResponse.<Void>builder()
                 .build();
     }
+
+    @PutMapping("/assignAmenity/{hotelId}")
+    ApiResponse<Void> assignAmenitiesToHotel(@PathVariable String hotelId , @RequestBody AssignAmenitiesRequest request){
+        hotelService.assignAmenitiesToHotel(hotelId , request);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Assign amenities to hotel success")
+                .build();
+    }
+
+    @DeleteMapping("/hotel/{hotelId}/amenities/{amenityId}")
+
+    ApiResponse<Void> deleteAmenityFromHotel(@PathVariable String hotelId , @PathVariable String amenityId){
+        hotelService.deleteAmenityFromHotel(hotelId , amenityId);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Xoa 1 amenity tu hotel")
+                .build();
+    }
+
 
 
     @GetMapping("/sortHotel")

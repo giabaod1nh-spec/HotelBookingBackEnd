@@ -70,6 +70,7 @@ public class AuthServiceImpl implements IAuthService {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(
                         request.getUsername() , request.getPassword()));
+        log.info("User hien tai :" + authentication.getName());
 
     //UsernamePaswordAuthenticationToken đc pass vào trong AuthenticationManager
     //Authentication Manager configure use DaoAuthenticationProvider

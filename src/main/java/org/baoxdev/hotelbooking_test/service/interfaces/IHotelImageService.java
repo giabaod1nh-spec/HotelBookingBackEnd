@@ -9,6 +9,6 @@ import java.util.List;
 public interface IHotelImageService {
     List<HotelImageResponse> uploadHotelImages(String hotelId , List<MultipartFile> files) throws IOException;
     List<HotelImageResponse> getHotelImages(String hotelId);
-    void deleteHotelImage(String imageId);
+    void deleteHotelImage(String imageId) throws IOException;
     void setPrimaryImage(String hotelId , String imageId);
 }

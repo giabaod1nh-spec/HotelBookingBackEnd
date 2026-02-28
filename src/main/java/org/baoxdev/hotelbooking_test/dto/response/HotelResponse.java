@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.model.enums.HotelStatus;
 
+import java.util.List;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
@@ -30,4 +32,9 @@ public class HotelResponse {
 
     HotelStatus hotelStatus;
 
+    Double avgRating;
+
+    Integer totalReviews;
+
+    List<AmenityResponse> amenities;
 }

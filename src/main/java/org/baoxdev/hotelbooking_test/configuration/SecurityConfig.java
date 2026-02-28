@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -68,15 +69,23 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET , PUBLIC_ENDPOINT)
                 .permitAll()
                 .requestMatchers(HttpMethod.GET , "/**").permitAll()
-                .requestMatchers(HttpMethod.POST , "/**").permitAll()
+                //.requestMatchers(HttpMethod.POST , "/**").permitAll()
                 .requestMatchers(HttpMethod.PUT , "/**").permitAll()
                 .requestMatchers(HttpMethod.DELETE , "/**").permitAll()
+                .requestMatchers(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html"
+                ).permitAll()
                 .anyRequest().authenticated()
         );
 
         //Tắt config của csrf
         httpSecurity.csrf(httpSecurityCsrfConfigurer
                 -> httpSecurityCsrfConfigurer.disable());
+
+        // CORS for frontend (localhost:5173, localhost:3000)
+        httpSecurity.cors(cors -> {});
         //server ko can luu session cho user
         httpSecurity.sessionManagement(session
                 -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import java.math.BigDecimal;
 import java.sql.SQLType;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -42,10 +43,13 @@ public class Booking {
     @OneToMany(mappedBy = "booking" , cascade = CascadeType.ALL , orphanRemoval = true)
     List<BookingRooms> bookingRooms;
 
+    @OneToMany(mappedBy = "booking" ,cascade = CascadeType.ALL , orphanRemoval = true)
+    List<Review> reviews;
 
-    Date checkInDate ;
 
-    Date checkOutDate;
+    LocalDate checkInDate ;
+
+    LocalDate checkOutDate;
 
     @Column(name = "total_price" , precision = 10 , scale = 2)
     BigDecimal totalPrice;

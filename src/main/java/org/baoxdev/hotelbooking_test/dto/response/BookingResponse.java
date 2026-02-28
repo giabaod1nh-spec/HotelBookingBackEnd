@@ -1,5 +1,6 @@
 package org.baoxdev.hotelbooking_test.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.model.enums.BookingStatus;
@@ -12,8 +13,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public class BookingResponse {
+    String hotelId;
     String hotelName;
     String roomTypeName;
     String guestName;

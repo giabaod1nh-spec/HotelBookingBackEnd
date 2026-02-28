@@ -42,7 +42,7 @@ public class HotelImageController {
     }
 
     @DeleteMapping("/delete/{imageId}")
-    public ApiResponse<Void> deleteImage(@PathVariable String imageId){
+    public ApiResponse<Void> deleteImage(@PathVariable String imageId) throws IOException {
         hotelImageService.deleteHotelImage(imageId);
         return ApiResponse.<Void>builder().build();
     }

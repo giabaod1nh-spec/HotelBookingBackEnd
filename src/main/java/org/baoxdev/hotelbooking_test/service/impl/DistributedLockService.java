@@ -25,33 +25,33 @@ public class DistributedLockService {
     //lockKey la lock cho 1 loai phong trong 1 ngay cu the
     //VD: booking:roomType:123:2026-02-01:2026-02-05
     //waitTime la thoi gian cho toi da de lay duoc lock -> tranh treo request
-    //leaseTime la thoi gian timeout de lock tu unlock
 
     public <T> T executeWithLock(String lockKey , long waitTime,  Supplier<T> operation){
         RLock lock = redissonClient.getLock(lockKey);
         try {
-            boolean acquired = lock.tryLock(waitTime, TimeUnit.SECONDS);
+            boolean acquired = lock.tryLock(waitTime , TimeUnit.SECONDS);
             //Redis check lock exist , not -> create , exists -> waitTime
             if(!acquired){
                 log.warn("Lock is busy: {}" , lockKey);
                 throw new AppException(ErrorCode.LOCK_IS_BUSY);
             }
             log.debug("Lock acquired: {}" ,lockKey);
+            return operation.get();
 
         }catch (InterruptedException e){
               Thread.currentThread().interrupt();
               log.error("Thread interrupted while waiting for lock: {}" , lockKey , e);
+              throw  new AppException(ErrorCode.LOCK_INTERUPTED);
         }finally {
             //If lock hold by current thread then released lock
             if(lock.isHeldByCurrentThread()){
                 lock.unlock();
-                log.debug("Log released:{}" , lockKey);
+                log.debug("Lock released:{}" , lockKey);
             }
         }
-        return operation.get();
     }
 
-    //Execute with default timeouts (10s wait , 30s release)
+    //Execute with default timeouts (10s wait)
 
     public <T> T executeWithLock(String lockKey , Supplier<T> operation){
         return executeWithLock(lockKey , 10 , operation);

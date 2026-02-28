@@ -7,6 +7,7 @@ import org.baoxdev.hotelbooking_test.model.entity.BookingRooms;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -29,9 +30,11 @@ public class BookingMapper {
         int totalRoom = bookingRooms.stream().mapToInt(br -> br.getQuantity()).sum();
 
         return BookingResponse.builder()
+                .hotelId(booking.getHotel().getHotelId())
                 .hotelName(booking.getHotel().getHotelName())
                 .guestName(booking.getGuestName())
                 .guestPhone(booking.getGuestPhone())
+                .numGuest(booking.getNumGuest())
                 .guestEmail(booking.getGuestEmail())
                 .specialRequest(booking.getSpecialRequest())
                 .bookingId(booking.getBookingId())
@@ -40,8 +43,8 @@ public class BookingMapper {
                 .totalPrice(booking.getTotalPrice())
                 .totalRooms(totalRoom)
                 .bookingRoomItemResponses(roomTypes)
-                .checkInDate(booking.getCheckInDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                .checkOutDate(booking.getCheckOutDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                .checkInDate(booking.getCheckInDate())
+                .checkOutDate(booking.getCheckOutDate())
                 .build();
     }
 }

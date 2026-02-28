@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.baoxdev.hotelbooking_test.dto.ApiResponse;
 import org.baoxdev.hotelbooking_test.dto.request.RoomTypeRequest;
 import org.baoxdev.hotelbooking_test.dto.request.RoomTypeUpdateRequest;
+import org.baoxdev.hotelbooking_test.dto.response.RoomTypeDetailResponse;
 import org.baoxdev.hotelbooking_test.dto.response.RoomTypeResponse;
 import org.baoxdev.hotelbooking_test.service.impl.RoomTypeServiceImpl;
 import org.baoxdev.hotelbooking_test.service.interfaces.IRoomTypeService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -57,5 +59,25 @@ public class RoomTypeController {
                 .build();
     }
 
+    @GetMapping("/hotel/{hotelId}/availability")
+    public ApiResponse<List<RoomTypeDetailResponse>> getRoomTypesWithAvailability(
+            @PathVariable String hotelId,
+            @RequestParam LocalDate checkIn,
+            @RequestParam LocalDate checkOut,
+            @RequestParam(defaultValue = "1") int guests) {
+        return ApiResponse.<List<RoomTypeDetailResponse>>builder()
+                .code(1000)
+                .result(roomTypeService.getRoomTypesWithAvailability(hotelId, checkIn, checkOut, guests))
+                .build();
+    }
+
+    @DeleteMapping("delete/{roomTypeId}")
+    public ApiResponse<Void> deleteRoomType(@PathVariable String roomTypeId){
+        roomTypeService.deleteRoomType(roomTypeId);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Delete room type success")
+                .build();
+    }
 
 }

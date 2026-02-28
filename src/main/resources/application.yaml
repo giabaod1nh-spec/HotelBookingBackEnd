@@ -26,7 +26,7 @@ spring:
       ddl-auto: update
     show-sql: true
   sendgrid:
-    api-key: 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
+    api-key:
     from-email: noreplybookingxhotel@gmail.com
 
   data:
@@ -35,11 +35,35 @@ spring:
       port: 14597
       password: YnttLGa38uDs29MUZ132smcVDv4Icfzn
       username: default
+      ssl:
+        enabled: false
 
 cloudinary:
   cloud-name: de2lvbq8f
   api-key: 677342821317714
   api-secret: nYYm8oLiIZx0D4rDVHIkD4yARSA
 
+vnpay:
+  tmn-code: DJG7E5P3
+  hash-secret: SDD8Z1DSWRM5F9ISCQ3CVGXY4JKTXO2V
+  pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  return-url: http://localhost:8082/dev/payments/vnpay-return
+  ipn-url: http://localhost:8082/dev/payments/vnpay-ipn
+  api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+
+
 app:
   verification-link-base: ${VERIFICATION_LINK_BASE:http://localhost:8082/dev}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: org.baoxdev.hotelbooking_test.controller
+  swagger-ui:
+    display-request-duration: true
+    path: /swagger-ui.html
+    groups-order: asc
+    operations-sorter: alpha
+
+
+

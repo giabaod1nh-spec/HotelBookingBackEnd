@@ -51,6 +51,16 @@ public class UserController {
                  .build();
     }
 
+    @GetMapping("/me")
+    public ApiResponse<UserCreationResponse> getCurrentUser(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        return ApiResponse.<UserCreationResponse>builder()
+                .code(1000)
+                .result(userService.getCurrentUser(username))
+                .build();
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getAll")
     public ApiResponse<List<UserCreationResponse>> getAllUser(){

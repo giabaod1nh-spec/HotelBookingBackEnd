@@ -3,6 +3,7 @@ package org.baoxdev.hotelbooking_test.service.impl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.baoxdev.hotelbooking_test.dto.request.ChangePassRequest;
 import org.baoxdev.hotelbooking_test.dto.request.UserCreationRequest;
 import org.baoxdev.hotelbooking_test.dto.request.UserUpdateRequest;
@@ -34,6 +35,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true )
+@Slf4j(topic = "USER_SERVICE")
 public class UserServiceImpl implements IUserService {
     UserMapper userMapper;
     UserRepository userRepository;
@@ -72,6 +74,13 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserCreationResponse getUser(String userId) {
         User user = userRepository.findUserByUserId(userId).orElseThrow(() -> new RuntimeException("Ko tim thay user"));
+        return userMapper.convertResponseFromUser(user);
+    }
+
+    @Override
+    public UserCreationResponse getCurrentUser(String username) {
+        User user = userRepository.findUserByUserName(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.convertResponseFromUser(user);
     }
 

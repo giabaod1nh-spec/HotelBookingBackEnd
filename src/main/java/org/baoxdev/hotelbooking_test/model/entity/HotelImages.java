@@ -20,6 +20,8 @@ public class HotelImages {
 
     Boolean isPrimary;
 
+    String imageId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     Hotel hotel;
 }

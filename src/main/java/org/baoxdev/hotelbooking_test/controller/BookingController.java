@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.baoxdev.hotelbooking_test.dto.ApiResponse;
 import org.baoxdev.hotelbooking_test.dto.request.BookingRequest;
 import org.baoxdev.hotelbooking_test.dto.request.CheckInRequest;
@@ -21,12 +22,13 @@ import java.util.List;
 @RequestMapping("/booking")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
-
+@Slf4j(topic = "BOOKING CONTROLLER")
 public class BookingController {
     BookingServiceImpl bookingService;
 
     private String getCurrentUserName(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Current name" + authentication.getName());
         return authentication.getName();
     }
 
@@ -50,6 +52,14 @@ public class BookingController {
                 .build();
     }
 
+    @GetMapping("/code/{bookingCode}")
+    public ApiResponse<BookingResponse> getBookingByCode(@PathVariable String bookingCode){
+        return ApiResponse.<BookingResponse>builder()
+                .code(1000)
+                .result(bookingService.getByBookingCode(bookingCode))
+                .build();
+    }
+
     @GetMapping("/getBookingHistory")
     public ApiResponse<List<BookingResponse>> getAllBooking(){
         return ApiResponse.<List<BookingResponse>>builder()
@@ -58,6 +68,14 @@ public class BookingController {
                 .build();
     }
 
+
+    @GetMapping("/reviewable")
+    public ApiResponse<List<BookingResponse>> getReviewableBookings(){
+        return ApiResponse.<List<BookingResponse>>builder()
+                .code(1000)
+                .result(bookingService.getReviewableBookings(getCurrentUserName()))
+                .build();
+    }
 
     @PutMapping("cancel/{bookingId}")
     public ApiResponse<Void> cancelBooking(@PathVariable String bookingId){
@@ -78,4 +96,12 @@ public class BookingController {
                 .build();
     }
 
+    @PutMapping("checkOut/{bookingId}")
+    public ApiResponse<Void>  checkOutHotel(@PathVariable String bookingId){
+
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Check out thanh cong ")
+                .build();
+    }
 }

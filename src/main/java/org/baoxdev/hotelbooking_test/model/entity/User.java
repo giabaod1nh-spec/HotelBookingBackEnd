@@ -73,4 +73,7 @@ public class User {
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , orphanRemoval = true)
     private List<EmailVerificationToken> emailVerifyTokens;
+
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , orphanRemoval = true)
+    private List<Review> reviews ;
 }

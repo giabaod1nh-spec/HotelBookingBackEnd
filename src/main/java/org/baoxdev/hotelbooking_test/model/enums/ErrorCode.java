@@ -9,7 +9,7 @@ public enum ErrorCode {
     CREATETOKEN_FAILED(1003 ,"Failed when create token" , HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1004, "User not found" , HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND(1005 , "Not found any role" , HttpStatus.BAD_REQUEST),
-    UNAUTHENTICATED(1006 , "authentication failed" , HttpStatus.BAD_REQUEST),
+    UNAUTHENTICATED(1006 , "authentication failed" , HttpStatus.UNAUTHORIZED),
     TOKEN_INVALID(1007, "Token invalid" , HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED(1008 , "Token expiration timed out" , HttpStatus.BAD_REQUEST),
     TOKEN_TYPE_INVALID(1009 , "Token type is not refresh" , HttpStatus.BAD_REQUEST),
@@ -33,7 +33,14 @@ public enum ErrorCode {
     BOOKING_ROOM_NOT_FOUND(1026 , "Booking room not found" , HttpStatus.BAD_REQUEST),
     ROOM_TYPE_MISMATCHED(1027 , "RoomType and Rome not matched type" , HttpStatus.BAD_REQUEST),
     LOCK_NOT_ACQUIRED(1028 , "Lock not acquired" , HttpStatus.LOCKED),
-    LOCK_IS_BUSY(1029 , "Lock is busy , user please try again" ,HttpStatus.LOCKED);
+    LOCK_IS_BUSY(1029 , "Lock is busy , user please try again" ,HttpStatus.LOCKED),
+    LOCK_INTERUPTED(1030 , "Lock is interupted" , HttpStatus.BAD_REQUEST),
+    BOOKING_PAID(1031 , "Booking already paid " , HttpStatus.BAD_REQUEST),
+    PAYMENT_NOT_FOUND(1032 , "Not found this payment" , HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_CHECK_IN(1033 , "Booking not in check in status " , HttpStatus.BAD_REQUEST),
+    AMENITY_NOT_FOUND(1034 , "Amenity not found" , HttpStatus.BAD_REQUEST),
+    REVIEW_AFTER_BOOKING_COMPLETED(1035 , "Review denied" , HttpStatus.BAD_REQUEST),
+    HOTEL_IMAGE_NOT_FOUND(1036 , "Hotel image not found" , HttpStatus.BAD_REQUEST)
     ;
 
 

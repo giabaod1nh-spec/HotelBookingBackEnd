@@ -3,6 +3,7 @@ package org.baoxdev.hotelbooking_test.service.impl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.baoxdev.hotelbooking_test.dto.response.CloudinarySaveResponse;
 import org.baoxdev.hotelbooking_test.dto.response.HotelImageResponse;
 import org.baoxdev.hotelbooking_test.exception.AppException;
 import org.baoxdev.hotelbooking_test.model.entity.Hotel;
@@ -48,12 +49,13 @@ public class HotelImageImpl implements IHotelImageService {
         //if(contentType == null || contentType.startsWith("image/")){
             //throw new AppException(ErrorCode.FILE_MUST_BE_IMAGE);
         //}
-            String imageUrl = cloudinaryService.upLoadFile(file);
+            CloudinarySaveResponse response = cloudinaryService.upLoadFile(file);
 
         //Create hotelImage
             HotelImages hotelImages = HotelImages.builder()
                     .hotel(hotel)
-                    .hotelImageUrl(imageUrl)
+                    .hotelImageUrl(response.getImageUrl())
+                    .imageId(response.getImagePublicId())
                     .isPrimary(isFirstImage)
                     .build();
 
@@ -83,8 +85,16 @@ public class HotelImageImpl implements IHotelImageService {
     }
 
     @Override
-    public void deleteHotelImage(String hotelImageId) {
+    public void deleteHotelImage(String hotelImageId) throws IOException {
+        HotelImages hotelImage = hotelImageRepository.findById(hotelImageId)
+                .orElseThrow(() -> new AppException(ErrorCode.HOTEL_IMAGE_NOT_FOUND));
+
+        //Delete ca hotelImage va ca anh that luu tru tren Cloudinary
+        String imageIdDelete = hotelImage.getImageId();
+        cloudinaryService.deleteFile(imageIdDelete);
+
         hotelImageRepository.deleteById(hotelImageId);
+
     }
 
     @Override

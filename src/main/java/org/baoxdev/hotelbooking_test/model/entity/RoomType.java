@@ -15,6 +15,7 @@ import java.sql.SQLType;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -32,6 +33,8 @@ public class RoomType {
     String roomTypeName;
 
     String roomTypeDesc;
+
+    String bedSummary;
 
     @Column(name = "base_price" , precision = 10 , scale = 2)
     BigDecimal basePrice;
@@ -71,4 +74,7 @@ public class RoomType {
 
     @OneToMany(mappedBy = "roomType" , cascade = CascadeType.ALL , orphanRemoval = true)
     List<RoomAvailability> roomAvailabilities;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    Set<Amenities> amenities;
 }

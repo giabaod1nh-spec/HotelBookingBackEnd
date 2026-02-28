@@ -49,6 +49,23 @@ public class RoomController {
                 .build();
     }
     
+    @PutMapping("updateInfo/{roomId}")
+    public ApiResponse<RoomResponse> updateRoomResponse(@RequestParam String roomId , @RequestBody RoomRequest request){
 
-    
+        return ApiResponse.<RoomResponse>builder()
+                .code(1000)
+                .message("Update room info success")
+                .result(roomService.updateRomeInfo(roomId , request))
+                .build();
+    }
+
+
+    @DeleteMapping("/delete/{roomId}")
+    public ApiResponse<Void> deleteRoomById(@PathVariable String roomId){
+        return ApiResponse.<Void>builder()
+                .build();
+    }
+
+
+
 }
